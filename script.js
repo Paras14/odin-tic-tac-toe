@@ -30,31 +30,75 @@ const gameboard = (() => {
 
 const displayController = (() => {
     //display Controller logic and returns
-    const gameboard = document.querySelector(".gameboard");
+    const playerSignSelectionDisplay = (player) => {
+        const displayPrompt = document.querySelector('.game-options > p');
+        displayPrompt.innerText = `${player.getPlayerName()} should select their sign`;
+    };
 
     const boxSelector = (index) => {
         return document.querySelector(`box-${index}`);
     };
 
-    const markX = (index) => {
+    const markXonGrid = (index) => {
         const currentBox = boxSelector(index);
         currentBox.classList.add("x-marked");
     };
 
-    const markO = (index) => {
+    const markOonGrid = (index) => {
         const currentBox = boxSelector(index);
         currentBox.classList.add("o-marked");
     };
+
+    return {markOonGrid, markXonGrid, playerSignSelectionDisplay};
 })();
 
-const player = (number, sign) => {
-    const getPlayerNumber = () => number;
+const inputController = (() => {
+    const playerSignSelection = (player) =>{
+        const signSelectionButtons = document.querySelectorAll('.game-options button');
+        signSelectionButtons.forEach((button) => {
+            button.addEventListener("click", (e) => {
+                player.setPlayerSign(e.target.classList[0]);
+                console.log(player.getPlayerSign());
+            });
+        });
+        displayController.playerSignSelectionDisplay(player);
+
+        
+    };
+
+    const gameboard = document.querySelectorAll(".gameboard button");
+    const boxesListener = () => {
+        console.log("inside boxListener");
+        console.log(gameboard);
+        gameboard.forEach((box) => box.addEventListener("click", boxEntryHandler));
+    };
+    const boxEntryHandler = (e) => {
+        console.log(e.target);
+        
+    };
+
+    return {boxesListener, playerSignSelection};
+})();
+
+const player = (playerName) => {
+    let sign = '';
+    const getPlayerName = () => playerName;
+    const setPlayerSign = signSelected => {
+        sign = signSelected;
+    };
     const getPlayerSign = () => sign;
     //more details if needed
-    return {getPlayerNumber, getPlayerSign};
+    return {getPlayerName, getPlayerSign, setPlayerSign};
 };
 
 const game = (gameboard, displayController) => {
+
+    
+    //playerOne
+    const playerOne = player('Player One');
+    //playerTwo
+    const playerTwo = player('Player Two');
+
     //game flow logic
     const firstTurnSelector = () => {
         //first turn selector and display
@@ -62,3 +106,10 @@ const game = (gameboard, displayController) => {
     //each round logic and victory check and match progress display
 };
 
+function gameFlow(){
+    console.log("inside game flow");
+    const playerOne = player('Paras');
+    inputController.playerSignSelection(playerOne);
+}
+
+gameFlow();
