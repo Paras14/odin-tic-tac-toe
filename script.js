@@ -67,15 +67,25 @@ const inputController = (() => {
     };
 
     const gameboard = document.querySelectorAll(".gameboard button");
-    const boxesListener = () => {
+    const boxesListener = (player) => {
         console.log("inside boxListener");
         console.log(gameboard);
-        gameboard.forEach((box) => box.addEventListener("click", boxEntryHandler));
+        let playerSign = player.getPlayerSign();
+        gameboard.forEach((box) => box.addEventListener("click", (e) => {
+            console.log(e.target);
+            console.log(playerSign);
+            if(playerSign === 'x'){
+                console.log("inside x");
+                e.target.classList.add('x-marked');
+            }
+            else if(playerSign === 'o'){
+                e.target.classList.add('o-marked');
+            }
+        }));
     };
-    const boxEntryHandler = (e) => {
-        console.log(e.target);
+    // const boxEntryHandler = (e, sign) => {
         
-    };
+    // };
 
     return {boxesListener, playerSignSelection};
 })();
@@ -109,7 +119,9 @@ const game = (gameboard, displayController) => {
 function gameFlow(){
     console.log("inside game flow");
     const playerOne = player('Paras');
-    inputController.playerSignSelection(playerOne);
+    playerOne.setPlayerSign('x');
+    console.log(playerOne.getPlayerSign());
+    inputController.boxesListener(playerOne);
 }
 
 gameFlow();
