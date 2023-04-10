@@ -85,8 +85,12 @@ const inputController = (() => {
                 console.log(gameBoard.getBoardInfo());
                 gameBoard.victoryCheck();
                 console.log("Victory Check: ",gameBoard.getVictoryMark());
+                if(gameBoard.getVictoryMark() !== 'e'){
+                    console.log(`Match over ${gameBoard.getVictoryMark()} won`);
+                }
                 game.switchCurrentPlayer();
                 displayController.playerTurnIndicator();
+                gameBoard.indecisiveCheck()?console.log('Match Draw'):console.log('match not over');
 
             }
 
