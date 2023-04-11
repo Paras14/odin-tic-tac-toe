@@ -223,3 +223,37 @@ button{
     background-repeat: no-repeat;
     background-position: center;
 }
+
+.match-result-bg{
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(0,0,0,0.4);
+    visibility: hidden;
+}
+
+.match-result{
+    visibility: hidden;
+    height: min(200px, 25vw);
+    width: min(200px, 25vw);
+    background-color: aliceblue;
+    padding: 10px;
+    position: fixed;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.match-result p{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 22px;
+}

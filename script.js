@@ -35,7 +35,11 @@ const gameBoard = (() => {
         return !board.includes('e');
     };
 
-    return {markO, markX, victoryCheck, indecisiveCheck, getBoardInfo, getVictoryMark};
+    const boardResetter = () => {
+        board.forEach((element) => 'e');
+    }
+
+    return {markO, markX, victoryCheck, indecisiveCheck, getBoardInfo, getVictoryMark, boardResetter};
 })();
 
 const displayController = (() => {
@@ -52,12 +56,32 @@ const displayController = (() => {
         }
     }
 
+    const indecisiveMatchHandler = () => {
+        const matchResult = document.querySelector('.match-result p');
+        matchResult.innerHTML = 'Match has been indecisive. Please refresh to start again';
+        matchResultDisplay();
+    }
+
+    const victoryMatchHandler = (winner) => {
+        const matchResult = document.querySelector('.match-result p');
+        matchResult.innerHTML = `${winner.getPlayerTitle()} has won the match. Please refresh to start again`;
+        matchResultDisplay();
+    }
+
     const playersNameSetter = (playerOne, playerTwo) => {
         const firstPlayerNamePositon = document.querySelector('.first-player');
         const secondPlayerNamePositon = document.querySelector('.second-player');
 
         firstPlayerNamePositon.innerHTML = playerOne;
         secondPlayerNamePositon.innerHTML = playerTwo;
+    }
+
+    const matchResultDisplay = () => {
+        //select element and change their visibility, 2 elements
+        const winnerPopUpBg = document.querySelector('.match-result-bg');
+        const winnerPopUp = document.querySelector('.match-result');
+        winnerPopUp.style.visibility = "visible";
+        winnerPopUpBg.style.visibility = "visible";
     }
 
     const boxSelector = (index) => {
@@ -74,7 +98,7 @@ const displayController = (() => {
         currentBox.classList.add("o-marked");
     };
 
-    return {markOonGrid, markXonGrid, playerTurnIndicator, playersNameSetter};
+    return {markOonGrid, markXonGrid, playerTurnIndicator, playersNameSetter, indecisiveMatchHandler, victoryMatchHandler};
 })();
 
 const inputController = (() => {
@@ -95,10 +119,12 @@ const inputController = (() => {
                 console.log("Victory Check: ",gameBoard.getVictoryMark());
                 if(gameBoard.getVictoryMark() !== 'e'){
                     console.log(`Match over ${gameBoard.getVictoryMark()} won`);
+                    gameBoard.getVictoryMark() === 'x' ? game.setWinner(game.getplayerOne()):game.setWinner(game.getplayerTwo());
+                    playerInputController.gameStopController(game);
                 }
                 game.switchCurrentPlayer();
                 displayController.playerTurnIndicator();
-                gameBoard.indecisiveCheck()?console.log('Match Draw'):console.log('match not over');
+                gameBoard.indecisiveCheck() ? playerInputController.gameStopController(game) : console.log('');
 
             }
 
@@ -145,11 +171,22 @@ const game = (firstPlayerName, secondPlayerName) => {
 
     let currentPlayer = playerOne;
 
+    let winner = 'nobody';
+
+    const setWinner = (player) => {
+        winner = player;
+    }
+
+    const getWinner = () => winner;
+
     const setCurrentPlayer = (player) => {
         currentPlayer = player;
     }
 
     const getCurrentPlayer = () => currentPlayer;
+
+    const getplayerOne = () => playerOne;
+    const getplayerTwo = () => playerTwo;
 
     const switchCurrentPlayer = () => {
         if(currentPlayer === playerOne){
@@ -161,7 +198,7 @@ const game = (firstPlayerName, secondPlayerName) => {
     };
     //each round logic and victory check and match progress display
 
-    return {playerSignSetter, switchCurrentPlayer, setCurrentPlayer, getCurrentPlayer};
+    return {playerSignSetter, switchCurrentPlayer, setCurrentPlayer, getCurrentPlayer, setWinner, getWinner, getplayerOne, getplayerTwo};
 };
 
 const playerInputController = (() => {
@@ -182,7 +219,7 @@ const playerInputController = (() => {
         secondNameValue = secondPlayerName.value;
     }
 
-    const gameStopController = () => {
+    const gameStopController = (game) => {
         const buttonText = document.querySelector('.start-stop-controller p');
         buttonText.innerHTML = 'Press to start';
         const buttonBg = document.querySelector('.start-stop');
@@ -190,10 +227,19 @@ const playerInputController = (() => {
             buttonBg.classList.remove('stop-button-bg');
         }
         buttonBg.classList.add('start-button-bg');
-
-        //more code to manage the game winner or draw
-        
         gameIsOn = false;
+        //more code to manage the game winner or draw
+        //display controller function () here for draw match result
+        console.log('This is the game : ', game);
+        if(game.getWinner() !== 'nobody'){
+            displayController.victoryMatchHandler(game.getWinner());
+        }
+        else{
+            displayController.indecisiveMatchHandler();
+        }
+        gameBoard.boardResetter();
+        
+        
     }
 
     const gameStartController = () => {
@@ -207,10 +253,8 @@ const playerInputController = (() => {
         gameIsOn = true;
         //more code to start the gameflow and send the names of players and update the name on webpage
         playerNameInputter();
-        displayController.playersNameSetter(firstNameValue, secondNameValue);
-        const newGame = game(firstNameValue, secondNameValue);
-        newGame.playerSignSetter();
-        inputController.boxesListener(newGame);
+        gameFlow(firstNameValue, secondNameValue)
+        
 
     }
 
@@ -218,8 +262,8 @@ const playerInputController = (() => {
         const buttonBg = document.querySelector('.start-stop');
         buttonBg.addEventListener('click', () => {
             if(gameIsOn){
-                gameStopController();
                 //steps to then stop the game
+                gameStopOnButtonPress();
             }
             else{
                 gameStartController();
@@ -228,12 +272,36 @@ const playerInputController = (() => {
         })
     }
 
-    return {gameStartStopButtonListener};
+    const gameStopOnButtonPress = () => {
+        const buttonText = document.querySelector('.start-stop-controller p');
+        buttonText.innerHTML = 'Press to start';
+        const buttonBg = document.querySelector('.start-stop');
+        if(buttonBg.classList.contains('stop-button-bg')){
+            buttonBg.classList.remove('stop-button-bg');
+        }
+        buttonBg.classList.add('start-button-bg');
+        gameIsOn = false;
+
+        gameBoard.boardResetter();
+
+        const matchResult = document.querySelector('.match-result p');
+        matchResult.innerHTML = "Match interrupted by manual stop. Please refresh to start again";
+        const winnerPopUpBg = document.querySelector('.match-result-bg');
+        const winnerPopUp = document.querySelector('.match-result');
+        winnerPopUp.style.visibility = "visible";
+        winnerPopUpBg.style.visibility = "visible";
+    }
+
+    return {gameStartStopButtonListener, gameStopController, gameStartController};
 
 })();
 
-function gameFlow(){
+function gameFlow(firstName, secondName){
     console.log("inside game flow");
+    displayController.playersNameSetter(firstName, secondName);
+    const newGame = game(firstName, secondName);
+    newGame.playerSignSetter();
+    inputController.boxesListener(newGame);
     
 }
 
