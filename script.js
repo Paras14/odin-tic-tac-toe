@@ -52,6 +52,14 @@ const displayController = (() => {
         }
     }
 
+    const playersNameSetter = (playerOne, playerTwo) => {
+        const firstPlayerNamePositon = document.querySelector('.first-player');
+        const secondPlayerNamePositon = document.querySelector('.second-player');
+
+        firstPlayerNamePositon.innerHTML = playerOne;
+        secondPlayerNamePositon.innerHTML = playerTwo;
+    }
+
     const boxSelector = (index) => {
         return document.querySelector(`box-${index}`);
     };
@@ -66,7 +74,7 @@ const displayController = (() => {
         currentBox.classList.add("o-marked");
     };
 
-    return {markOonGrid, markXonGrid, playerTurnIndicator};
+    return {markOonGrid, markXonGrid, playerTurnIndicator, playersNameSetter};
 })();
 
 const inputController = (() => {
@@ -109,24 +117,25 @@ const inputController = (() => {
     return {boxesListener};
 })();
 
-const player = (playerName) => {
+const player = (playerName, playerTitle) => {
     let sign = '';
+    const getPlayerTitle = () => playerTitle;
     const getPlayerName = () => playerName;
     const setPlayerSign = signSelected => {
         sign = signSelected;
     };
     const getPlayerSign = () => sign;
     //more details if needed
-    return {getPlayerName, getPlayerSign, setPlayerSign};
+    return {getPlayerName, getPlayerSign, setPlayerSign, getPlayerTitle};
 };
 
-const game = () => {
+const game = (firstPlayerName, secondPlayerName) => {
 
     
     //playerOne
-    const playerOne = player('first-player');
+    const playerOne = player('first-player', firstPlayerName);
     //playerTwo
-    const playerTwo = player('second-player');
+    const playerTwo = player('second-player', secondPlayerName);
 
     //game flow logic
     const playerSignSetter = () => {
@@ -159,13 +168,15 @@ const playerInputController = (() => {
 
     let gameIsOn = false;
 
-    const firstNameValue = '';
+    let firstNameValue = '';
 
-    const secondNameValue = '';
+    let secondNameValue = '';
 
     const playerNameInputter = () => {
-        const firstPlayerName = document.querySelector(input[id="first-player-name"]);
-        const secondPlayerName = document.querySelector(input[id="second-player-name"]);
+        const firstPlayerName = document.querySelector('input[id="first-player-name"]');
+        const secondPlayerName = document.querySelector('input[id="second-player-name"]');
+
+        console.log(firstPlayerName.value);
 
         firstNameValue = firstPlayerName.value;
         secondNameValue = secondPlayerName.value;
@@ -193,10 +204,14 @@ const playerInputController = (() => {
             buttonBg.classList.remove('start-button-bg');
         }
         buttonBg.classList.add('stop-button-bg');
-
-        //more code to start the gameflow and send the names of players and update the name on webpage
-
         gameIsOn = true;
+        //more code to start the gameflow and send the names of players and update the name on webpage
+        playerNameInputter();
+        displayController.playersNameSetter(firstNameValue, secondNameValue);
+        const newGame = game(firstNameValue, secondNameValue);
+        newGame.playerSignSetter();
+        inputController.boxesListener(newGame);
+
     }
 
     const gameStartStopButtonListener = () => {
@@ -219,9 +234,6 @@ const playerInputController = (() => {
 
 function gameFlow(){
     console.log("inside game flow");
-    const newGame = game();
-    newGame.playerSignSetter();
-    inputController.boxesListener(newGame);
     
 }
 

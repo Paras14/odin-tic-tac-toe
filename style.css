@@ -148,6 +148,11 @@ button{
     margin: 10px 10px;
 }
 
+.player-name-input input{
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+}
+
 .start-stop-controller{
     display: flex;
     flex-direction: column;
