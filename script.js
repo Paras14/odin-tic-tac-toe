@@ -155,6 +155,68 @@ const game = () => {
     return {playerSignSetter, switchCurrentPlayer, setCurrentPlayer, getCurrentPlayer};
 };
 
+const playerInputController = (() => {
+
+    let gameIsOn = false;
+
+    const firstNameValue = '';
+
+    const secondNameValue = '';
+
+    const playerNameInputter = () => {
+        const firstPlayerName = document.querySelector(input[id="first-player-name"]);
+        const secondPlayerName = document.querySelector(input[id="second-player-name"]);
+
+        firstNameValue = firstPlayerName.value;
+        secondNameValue = secondPlayerName.value;
+    }
+
+    const gameStopController = () => {
+        const buttonText = document.querySelector('.start-stop-controller p');
+        buttonText.innerHTML = 'Press to start';
+        const buttonBg = document.querySelector('.start-stop');
+        if(buttonBg.classList.contains('stop-button-bg')){
+            buttonBg.classList.remove('stop-button-bg');
+        }
+        buttonBg.classList.add('start-button-bg');
+
+        //more code to manage the game winner or draw
+        
+        gameIsOn = false;
+    }
+
+    const gameStartController = () => {
+        const buttonText = document.querySelector('.start-stop-controller p');
+        buttonText.innerHTML = 'Press to stop';
+        const buttonBg = document.querySelector('.start-stop');
+        if(buttonBg.classList.contains('start-button-bg')){
+            buttonBg.classList.remove('start-button-bg');
+        }
+        buttonBg.classList.add('stop-button-bg');
+
+        //more code to start the gameflow and send the names of players and update the name on webpage
+
+        gameIsOn = true;
+    }
+
+    const gameStartStopButtonListener = () => {
+        const buttonBg = document.querySelector('.start-stop');
+        buttonBg.addEventListener('click', () => {
+            if(gameIsOn){
+                gameStopController();
+                //steps to then stop the game
+            }
+            else{
+                gameStartController();
+                //steps and functional flow to play the game
+            }
+        })
+    }
+
+    return {gameStartStopButtonListener};
+
+})();
+
 function gameFlow(){
     console.log("inside game flow");
     const newGame = game();
@@ -163,4 +225,5 @@ function gameFlow(){
     
 }
 
-gameFlow();
+// gameFlow();
+playerInputController.gameStartStopButtonListener();
